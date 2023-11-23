@@ -199,7 +199,7 @@ export function Player(): ReactElement {
       </div>
     );
   }
-  if (game == null) return <div>No such game</div>;
+  if (game == null) return <div></div>;
   if (!playerId) return <div>No such player</div>;
   if (!game.isRoundActive) {
     return (

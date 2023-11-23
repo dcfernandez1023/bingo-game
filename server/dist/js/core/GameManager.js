@@ -157,7 +157,6 @@ class GameManager {
             if (!this.isAuthorized(gameId, sessionId) ||
                 !this.games[gameId].availableNumbers.length ||
                 !this.games[gameId].isRoundActive) {
-                console.log("in here");
                 return null;
             }
             const min = 0;
@@ -361,15 +360,18 @@ class GameManager {
         return true;
     }
     getSelectedPatternIndexes(gameId) {
-        const selectedIndexes = [];
         const pattern = this.games[gameId].currentPattern;
-        for (let row = 0; row < pattern.length; row++) {
-            for (let col = 0; col < pattern[row].length; col++) {
-                if (pattern[row][col] === 1) {
-                    const flattenedIndex = 5 * row + col;
-                    selectedIndexes.push(flattenedIndex);
-                }
+        const flattenedPattern = [];
+        for (let col = 0; col < 5; col++) {
+            for (let row = 0; row < 5; row++) {
+                const val = pattern[row][col];
+                flattenedPattern.push(val);
             }
+        }
+        const selectedIndexes = [];
+        for (let i = 0; i < flattenedPattern.length; i++) {
+            if (flattenedPattern[i] === 1)
+                selectedIndexes.push(i);
         }
         return selectedIndexes;
     }
