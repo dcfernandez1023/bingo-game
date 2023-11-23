@@ -1,0 +1,47 @@
+.pattern-cell:hover {
+  background-color:var(--hover-color) !important;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+  display: none;
+}
+
+@keyframes growIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.bingo-number {
+  display: inline-block;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 8px;
+  background-color: #00bcd4;
+  color: #fff;
+  border-radius: 5px;
+}
+
+.bingo-number-animate {
+  display: inline-block;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 8px;
+  background-color: #00bcd4;
+  color: #fff;
+  border-radius: 5px;
+  animation: growIn 1s ease-out;
+}
+
+.host-dropdown-button {
+  background-color: #A6ACAF;
+}
