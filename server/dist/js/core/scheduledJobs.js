@@ -8,7 +8,7 @@ const node_cron_1 = __importDefault(require("node-cron"));
 const GameManager_1 = __importDefault(require("./GameManager"));
 const scheduleCleanup = (io) => {
     node_cron_1.default
-        .schedule("*/1 * * * *", () => {
+        .schedule("*/10 * * * *", () => {
         console.log("Running game cleanup");
         const currentDate = new Date().getTime();
         const gamesToDelete = [];

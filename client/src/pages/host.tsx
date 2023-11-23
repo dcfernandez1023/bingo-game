@@ -84,10 +84,10 @@ export function Host(): ReactElement {
         <Col md={3} style={styles.col}>
           <div>
             <Row>
-              <Col>
+              <Col xs={8}>
                 <h2>{game.name}</h2>
               </Col>
-              <Col>
+              <Col xs={4}>
                 <Dropdown>
                   <Dropdown.Toggle
                     style={styles.dropdownOptions}

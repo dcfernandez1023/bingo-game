@@ -4,7 +4,7 @@ import GAME_MANAGER from "./GameManager";
 
 export const scheduleCleanup = (io: SocketIOServer) => {
   cron
-    .schedule("*/1 * * * *", () => {
+    .schedule("*/10 * * * *", () => {
       console.log("Running game cleanup");
       const currentDate = new Date().getTime();
       const gamesToDelete = [];
