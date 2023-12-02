@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { ReactElement, useEffect, useState } from "react";
+import React, { ReactElement, useEffect, useState, useRef } from "react";
 import { Game, GameSchema } from "../types/game";
 import {
   GAME_EVENTS,
@@ -14,6 +14,7 @@ import {
 import {
   Alert,
   Button,
+  ButtonGroup,
   Carousel,
   Col,
   Container,
@@ -21,6 +22,7 @@ import {
   InputGroup,
   Row,
   Spinner,
+  ToggleButton,
 } from "react-bootstrap";
 import { styles } from "../styles/player-styles";
 import { Card } from "../components/card";
@@ -38,8 +40,31 @@ export function Player(): ReactElement {
   const [currentCard, setCurrentCard] = useState<number>(1);
   const [cardsAutofilled, setCardsAutofilled] = useState<string[]>();
   const [isAnimate, setIsAnimate] = useState<boolean>(true);
+  const [activeCardIndex, setActiveCardIndex] = useState<number>(0);
+  const [isVerticalLayout, setIsVerticalLayout] = useState<boolean>(false);
+
+  const carouselRef = useRef(null);
 
   initSocket((errorMessage: string) => setError(new Error(errorMessage)));
+
+  // Moves carousel to the left
+  const onLeft = () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    if (carouselRef && carouselRef.current) carouselRef.current.prev();
+  };
+
+  // Moves carousel to the right
+  const onRight = () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    if (carouselRef && carouselRef.current) carouselRef.current.next();
+  };
+
+  const setCardLayoutOption = () => {
+    const layout = window.localStorage.getItem("bingoGameCardLayout");
+    setIsVerticalLayout(layout === "vertical");
+  };
 
   const subscribe = () => {
     subscribeToGame((event: GAME_EVENTS, data: string) => {
@@ -63,7 +88,7 @@ export function Player(): ReactElement {
           } else setCurrentCall("N/A");
         }
       } catch (err) {
-        console.log(err);
+        console.error(err);
         setError(err as Error);
       }
     });
@@ -149,6 +174,28 @@ export function Player(): ReactElement {
     );
   };
 
+  const handlePrev = () => {
+    if (game && playerId && game.players[playerId]) {
+      onLeft();
+      const length = game.players[playerId].cards.length;
+      const indexToSet =
+        activeCardIndex - 1 < 0 ? length - 1 : activeCardIndex - 1;
+      setActiveCardIndex(indexToSet);
+      setCurrentCard(indexToSet + 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (game && playerId && game.players[playerId]) {
+      onRight();
+      const length = game.players[playerId].cards.length;
+      const indexToSet =
+        activeCardIndex + 1 >= length ? 0 : activeCardIndex + 1;
+      setActiveCardIndex(indexToSet);
+      setCurrentCard(indexToSet + 1);
+    }
+  };
+
   const handleAutofill = () => {
     setAutofillDisabled(true);
     autofillCards((results: string[]) => {
@@ -170,8 +217,80 @@ export function Player(): ReactElement {
     );
   };
 
+  const displayHorizontalCards = () => {
+    if (!game || !playerId) return <div></div>;
+    return (
+      <div>
+        <div style={styles.swipePrompt}>
+          {game.players[playerId].cards.length > 1 ? (
+            `Click the left or right button to view your cards`
+          ) : (
+            <span></span>
+          )}
+        </div>
+        <div style={styles.mobileCurrentCard}>
+          Card {game.players[playerId].cards.length ? currentCard : 0} of{" "}
+          {game.players[playerId].cards.length}
+        </div>
+        <Row>
+          <Col>
+            <Button
+              variant="light"
+              style={styles.leftButton}
+              onClick={handlePrev}
+            >
+              ← Left
+            </Button>
+          </Col>
+          <Col>
+            <Button
+              variant="light"
+              style={styles.rightButton}
+              onClick={handleNext}
+            >
+              Right →
+            </Button>
+          </Col>
+        </Row>
+        <Carousel
+          ref={carouselRef}
+          touch={false}
+          indicators={false}
+          interval={null}
+          activeIndex={activeCardIndex}
+        >
+          {game.players[playerId].cards.map(
+            (card: CardCell[], cardIndex: number) => {
+              return (
+                // eslint-disable-next-line react/jsx-key
+                <Carousel.Item key={`card-${cardIndex}`}>
+                  <Card card={card} cardIndex={cardIndex} colSpan={12} />
+                </Carousel.Item>
+              );
+            },
+          )}
+        </Carousel>
+      </div>
+    );
+  };
+
+  const displayVerticalCards = () => {
+    if (!game || !playerId) return <div></div>;
+    return (
+      <Row>
+        {game.players[playerId].cards.map(
+          (card: CardCell[], cardIndex: number) => {
+            // eslint-disable-next-line react/jsx-key
+            return <Card card={card} cardIndex={cardIndex} />;
+          },
+        )}
+      </Row>
+    );
+  };
+
   useEffect(() => {
     setIsAnimate(true);
+    setCardLayoutOption();
     setAutofillDisabled(false);
     setCardsAutofilled(undefined);
     makeJoinGameRequest((result: { status: string; playerId: string }) => {
@@ -308,33 +427,47 @@ export function Player(): ReactElement {
           </Col>
         </Row>
         <br />
-        <div style={styles.swipePrompt}>
-          {game.players[playerId].cards.length > 1 ? (
-            `Swipe left or right to view your cards`
-          ) : (
-            <span></span>
-          )}
-        </div>
-        <div style={styles.mobileCurrentCard}>
-          Card {game.players[playerId].cards.length ? currentCard : 0} of{" "}
-          {game.players[playerId].cards.length}
-        </div>
-        <Carousel
-          indicators={false}
-          interval={null}
-          onSelect={(eventKey: number) => setCurrentCard(eventKey + 1)}
-        >
-          {game.players[playerId].cards.map(
-            (card: CardCell[], cardIndex: number) => {
-              return (
-                // eslint-disable-next-line react/jsx-key
-                <Carousel.Item key={`card-${cardIndex}`}>
-                  <Card card={card} cardIndex={cardIndex} colSpan={12} />
-                </Carousel.Item>
-              );
-            },
-          )}
-        </Carousel>
+        <Row style={styles.cardLayoutContainer}>
+          <Col>
+            <span style={styles.cardLayoutText}>Card Layout:</span>
+            <ButtonGroup size="sm">
+              <ToggleButton
+                id="radio-horizontal-toggle"
+                type="radio"
+                variant="secondary"
+                checked={!isVerticalLayout}
+                onChange={() => {
+                  setIsVerticalLayout(false);
+                  window.localStorage.setItem(
+                    "bingoGameCardLayout",
+                    "horizontal",
+                  );
+                }}
+                value=""
+              >
+                Horizontal
+              </ToggleButton>
+              <ToggleButton
+                id="radio-vertical-toggle"
+                type="radio"
+                variant="secondary"
+                checked={isVerticalLayout}
+                onChange={() => {
+                  setIsVerticalLayout(true);
+                  window.localStorage.setItem(
+                    "bingoGameCardLayout",
+                    "vertical",
+                  );
+                }}
+                value=""
+              >
+                Vertical
+              </ToggleButton>
+            </ButtonGroup>
+          </Col>
+        </Row>
+        <hr />
+        {isVerticalLayout ? displayVerticalCards() : displayHorizontalCards()}
         {showChat ? (
           <Row style={styles.mobileChatContainer}>
             <Col>

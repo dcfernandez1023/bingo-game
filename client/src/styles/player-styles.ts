@@ -55,4 +55,16 @@ export const styles: Record<string, React.CSSProperties> = {
     marginTop: "12px",
     marginBottom: "12px",
   },
+  leftButton: {
+    float: "left",
+  },
+  rightButton: {
+    float: "right",
+  },
+  cardLayoutContainer: {
+    textAlign: "center",
+  },
+  cardLayoutText: {
+    marginRight: "8px",
+  },
 };
