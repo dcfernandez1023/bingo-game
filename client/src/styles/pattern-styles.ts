@@ -4,10 +4,10 @@ export const styles = {
   },
   patternCell: {
     height: "45px",
-    border: "1px solid lightGray",
+    border: "0.1em solid #BDC3C7",
     "--hover-color": "lightGray",
   },
   patternCellActive: {
-    backgroundColor: "#F7DC6F",
+    backgroundColor: "#F4D03F",
   },
 } as Record<string, React.CSSProperties>;

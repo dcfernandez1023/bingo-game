@@ -218,9 +218,9 @@ class GameManager {
     }
     requestCards(gameId, playerId, numCardsToPurchase) {
         try {
-            if (this.games[gameId] &&
-                this.games[gameId].players[playerId] &&
-                !this.games[gameId].players[playerId].currentPurchaseRequestId) {
+            if (this.games[gameId] && this.games[gameId].players[playerId]) {
+                if (this.games[gameId].players[playerId].currentPurchaseRequestId)
+                    return this.games[gameId];
                 const purchaseRequestId = (0, uuid_1.v4)();
                 this.games[gameId].purchaseRequests.push({
                     id: purchaseRequestId,
@@ -307,7 +307,7 @@ class GameManager {
         const currentCallNum = val === "FREE" ? -1 : parseInt(val);
         const card = this.games[gameId].players[playerId].cards[cardIndex];
         if (!card)
-            return null;
+            throw new Error("Card does not exist");
         for (let j = 0; j < card.length; j++) {
             if (card[j].val === currentCallNum) {
                 card[j].isChecked = !card[j].isChecked;
