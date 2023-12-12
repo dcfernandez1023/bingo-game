@@ -12,17 +12,6 @@ export enum GAME_EVENTS {
   NOTIFY = "notify",
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const handleDisconnect = () => {
-  if (!SOCKET) {
-    alert("You have lost connection, please refresh the page");
-    return;
-  }
-  if (!SOCKET.connected) {
-    window.location.reload();
-  }
-};
-
 export const initSocket = (
   socketErrorHandler?: (errorMessage: string) => void,
 ) => {
@@ -35,7 +24,7 @@ export const initSocket = (
     SOCKET =
       HOST.length > 0 ? io(HOST, connectionOptions) : io("", connectionOptions);
     SOCKET.on("error", (d) => SOCKET_ERROR_HANDLER(JSON.parse(d).error));
-    SOCKET.on("disconnect", () => handleDisconnect());
+    SOCKET.on("disconnect", () => window.location.reload());
   }
   return SOCKET;
 };
