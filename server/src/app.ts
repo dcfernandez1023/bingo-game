@@ -25,14 +25,19 @@ app.use(indexRoutes);
 app.use(gameRoutes);
 
 const server = http.createServer(app);
+const pingOptions = {
+  pingInterval: 1000,
+  pingTimeout: 3000,
+};
 
 const io = new SocketIOServer(
   server,
   CLIENT_HOST
     ? {
         cors: { origin: CLIENT_HOST },
+        ...pingOptions,
       }
-    : {},
+    : pingOptions,
 );
 initSocketServer(io);
 scheduleCleanup(io);

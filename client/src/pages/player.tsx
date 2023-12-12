@@ -288,21 +288,28 @@ export function Player(): ReactElement {
     );
   };
 
+  const handleMakeJoinGameRequestResponse = (result: {
+    status: string;
+    playerId: string;
+  }) => {
+    try {
+      if (result.status === "existing") subscribe();
+      else if (result.status === "new") setIsNewPlayer(true);
+      else setError(new Error(result.status));
+      setPlayerId(result.playerId);
+    } catch (e) {
+      setError(e as Error);
+    }
+  };
+
   useEffect(() => {
     setIsAnimate(true);
     setCardLayoutOption();
     setAutofillDisabled(false);
     setCardsAutofilled(undefined);
-    makeJoinGameRequest((result: { status: string; playerId: string }) => {
-      try {
-        if (result.status === "existing") subscribe();
-        else if (result.status === "new") setIsNewPlayer(true);
-        else setError(new Error(result.status));
-        setPlayerId(result.playerId);
-      } catch (e) {
-        setError(e as Error);
-      }
-    });
+    makeJoinGameRequest((result: { status: string; playerId: string }) =>
+      handleMakeJoinGameRequestResponse(result),
+    );
   }, [currentCall]);
 
   if (isNewPlayer) {

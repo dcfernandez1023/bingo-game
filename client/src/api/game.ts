@@ -3,7 +3,6 @@ import axios, { AxiosError } from "axios";
 import { type Socket, io } from "socket.io-client";
 
 const HOST = process.env.REACT_APP_SERVER_HOST ?? "";
-console.log(HOST);
 let SOCKET: Socket | null = null;
 let SOCKET_ERROR_HANDLER = (errorMessage: string) => {
   console.error(errorMessage);
@@ -18,10 +17,14 @@ export const initSocket = (
 ) => {
   if (socketErrorHandler) SOCKET_ERROR_HANDLER = socketErrorHandler;
   if (!SOCKET) {
-    const connectionOptions = { withCredentials: true };
+    const connectionOptions = {
+      withCredentials: true,
+      forceNew: true,
+    };
     SOCKET =
       HOST.length > 0 ? io(HOST, connectionOptions) : io("", connectionOptions);
     SOCKET.on("error", (d) => SOCKET_ERROR_HANDLER(JSON.parse(d).error));
+    SOCKET.on("disconnect", () => window.location.reload());
   }
   return SOCKET;
 };

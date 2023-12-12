@@ -26,11 +26,12 @@ app.use(express_1.default.static(path_1.default.resolve("..", "client/build")));
 app.use(index_1.default);
 app.use(game_1.default);
 const server = http_1.default.createServer(app);
+const pingOptions = {
+    pingInterval: 1000,
+    pingTimeout: 3000,
+};
 const io = new socket_io_1.Server(server, constants_1.CLIENT_HOST
-    ? {
-        cors: { origin: constants_1.CLIENT_HOST },
-    }
-    : {});
+    ? Object.assign({ cors: { origin: constants_1.CLIENT_HOST } }, pingOptions) : pingOptions);
 (0, socketIO_1.initSocketServer)(io);
 (0, scheduledJobs_1.scheduleCleanup)(io);
 server.listen(PORT, HOST, () => {
