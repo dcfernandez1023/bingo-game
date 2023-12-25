@@ -28,7 +28,7 @@ app.use(game_1.default);
 const server = http_1.default.createServer(app);
 const pingOptions = {
     pingInterval: 1000,
-    pingTimeout: 3000,
+    pingTimeout: 2000,
 };
 const io = new socket_io_1.Server(server, constants_1.CLIENT_HOST
     ? Object.assign({ cors: { origin: constants_1.CLIENT_HOST } }, pingOptions) : pingOptions);

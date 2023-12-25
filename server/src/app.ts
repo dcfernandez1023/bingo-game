@@ -27,7 +27,7 @@ app.use(gameRoutes);
 const server = http.createServer(app);
 const pingOptions = {
   pingInterval: 1000,
-  pingTimeout: 3000,
+  pingTimeout: 2000,
 };
 
 const io = new SocketIOServer(
